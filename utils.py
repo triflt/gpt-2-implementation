@@ -24,7 +24,7 @@ def estimate_loss(model, train_data, val_data, config):
 
 def log_gpu_usage(writer, step):
     if torch.cuda.is_available():
-        gpu_memory_allocated = torch.cuda.memory_allocated()
-        gpu_memory_reserved = torch.cuda.memory_reserved()
-        writer.add_scalar('GPU/Memory Allocated', gpu_memory_allocated, step) / 1e9 
-        writer.add_scalar('GPU/Memory Reserved', gpu_memory_reserved, step) / 1e9
+        gpu_memory_allocated = torch.cuda.memory_allocated() / 1e9
+        gpu_memory_reserved = torch.cuda.memory_reserved() / 1e9 
+        writer.add_scalar('GPU/Memory Allocated', gpu_memory_allocated, step)
+        writer.add_scalar('GPU/Memory Reserved', gpu_memory_reserved, step) 
