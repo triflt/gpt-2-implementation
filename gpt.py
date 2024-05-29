@@ -17,7 +17,6 @@ dropout = 0.2
 
 torch.manual_seed(1337)
 
-
 class MultiHeadAttention(nn.Module):
     def __init__(self, num_heads, head_size):
         super().__init__()
@@ -49,7 +48,6 @@ class MultiHeadAttention(nn.Module):
         output = self.o_proj(values)
         return output
 
-
 class FeedFoward(nn.Module):
     """ a simple linear layer followed by a non-linearity """
 
@@ -65,7 +63,7 @@ class FeedFoward(nn.Module):
     def forward(self, x):
         return self.net(x)
 
-class Block(nn.Module):
+class TrasnformerBlock(nn.Module):
     """ Transformer block: communication followed by computation """
 
     def __init__(self, n_embd, n_head):
@@ -87,7 +85,7 @@ class GPTLanguageModel(nn.Module):
         super().__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
-        self.blocks = nn.Sequential(*[Block(n_embd, n_head=n_head) for _ in range(n_layer)])
+        self.blocks = nn.Sequential(*[TrasnformerBlock(n_embd, n_head=n_head) for _ in range(n_layer)])
         self.ln_f = nn.LayerNorm(n_embd)
         self.lm_head = nn.Linear(n_embd, vocab_size)
 
