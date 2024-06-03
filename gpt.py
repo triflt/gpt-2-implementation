@@ -78,8 +78,6 @@ class GPTLanguageModel(nn.Module):
         super().__init__()
         self.token_embedding_table = nn.Embedding(vocab_size, n_embd)
         self.position_embedding_table = nn.Embedding(block_size, n_embd)
-        #decoder_layer = nn.TransformerEncoderLayer(d_model=n_embd, nhead=n_head)
-        #self.blocks = nn.TransformerEncoder(decoder_layer, num_layers=n_layer)
         self.blocks = nn.Sequential(*[TrasnformerBlock(n_embd=n_embd, n_head=n_head) for _ in range(n_layer)])
         self.ln_f = nn.LayerNorm(n_embd)
         self.lm_head = nn.Linear(n_embd, vocab_size)
@@ -100,8 +98,7 @@ class GPTLanguageModel(nn.Module):
         tok_emb = self.token_embedding_table(idx) # (B,T,C)
         pos_emb = self.position_embedding_table(torch.arange(T, device=device)) # (T,C)
         x = tok_emb + pos_emb # (B,T,C)
-        #causal_mask = nn.Transformer.generate_square_subsequent_mask(T).to(idx.device)
-        x = self.blocks(x)#, mask=causal_mask) # (B,T,C)
+        x = self.blocks(x) # (B,T,C)
         x = self.ln_f(x) # (B,T,C)
         logits = self.lm_head(x) # (B,T,vocab_size)
 

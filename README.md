@@ -1,2 +1,1 @@
-# MoD
-Mixture of Depth implementation
+# GPT-2 implementation

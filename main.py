@@ -4,7 +4,6 @@ from torch.utils.tensorboard import SummaryWriter
 
 from config import Config
 from gpt import GPTLanguageModel
-from mod import GPTLanguageMoD
 from utils import log_gpu_usage, estimate_loss, get_batch
 
 config = Config()
@@ -34,20 +33,21 @@ print(sum(p.numel() for p in m.parameters()) / 1e6, 'M parameters')
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=config.learning_rate)
 
-for iter in tqdm(range(config.max_iters)):
-    if iter % config.eval_interval == 0 or iter == config.max_iters - 1:
-        losses = estimate_loss(model, train_data, val_data, config)
-        print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
-        writer.add_scalar('Loss/train', losses['train'], iter)
-        writer.add_scalar('Loss/val', losses['val'], iter)
-        log_gpu_usage(writer, iter)
+if __name__ == '__main__':
+    for iter in tqdm(range(config.max_iters)):
+        if iter % config.eval_interval == 0 or iter == config.max_iters - 1:
+            losses = estimate_loss(model, train_data, val_data, config)
+            print(f"step {iter}: train loss {losses['train']:.4f}, val loss {losses['val']:.4f}")
+            writer.add_scalar('Loss/train', losses['train'], iter)
+            writer.add_scalar('Loss/val', losses['val'], iter)
+            log_gpu_usage(writer, iter)
 
-    xb, yb = get_batch('train', train_data, val_data, config)
-    logits, loss = model(xb, yb)
-    optimizer.zero_grad(set_to_none=True)
-    loss.backward()
-    optimizer.step()
+        xb, yb = get_batch('train', train_data, val_data, config)
+        logits, loss = model(xb, yb)
+        optimizer.zero_grad(set_to_none=True)
+        loss.backward()
+        optimizer.step()
 
-torch.save(model.state_dict(), f'models/model_{losses["val"]}.pth')
+    torch.save(model.state_dict(), f'models/model_{losses["val"]}.pth')
 
-writer.close()
+    writer.close()
